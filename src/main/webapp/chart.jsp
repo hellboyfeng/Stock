@@ -1,119 +1,88 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+         pageEncoding="UTF-8" %>
 <%@ include file="app.jsp" %>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-	<meta charset="utf-8">
-	<title>ECharts</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>INSPINIA | Morris.js Charts</title>
+
+    <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${ctx}/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <!-- orris -->
+    <link href="${ctx}/css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">
+
+    <link href="${ctx}/css/animate.css" rel="stylesheet">
+    <link href="${ctx}/css/style.css" rel="stylesheet">
+
 </head>
 
 <body>
-<!--Step:1 Prepare a dom for ECharts which (must) has size (width & hight)-->
-<!--Step:1 为ECharts准备一个具备大小（宽高）的Dom-->
-<div id="main" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
 
-<!--Step:2 Import echarts.js-->
-<!--Step:2 引入echarts.js-->
-<script src="${ctx}/js/echarts.js"></script>
+<div id="wrapper">
+
+    <div>
+        <div  >
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Simple one line Example </h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#">Config option 1</a>
+                                    </li>
+                                    <li><a href="#">Config option 2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div id="morris-one-line-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+<!-- Mainly scripts -->
 <script src="${ctx}/js/jquery-2.1.1.js"></script>
+<script src="${ctx}/js/bootstrap.min.js"></script>
+<script src="${ctx}/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="${ctx}/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 
-<script type="text/javascript">
+<!-- Morris -->
+<script src="${ctx}/js/plugins/morris/raphael-2.1.0.min.js"></script>
+<script src="${ctx}/js/plugins/morris/morris.js"></script>
 
-	$(function(){
-		//dataX();
-	})
-	function getUrlParam(name) {
-		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
-		var r = window.location.search.substr(1).match(reg);  //匹配目标参数
-		if (r != null) return unescape(r[2]); return null; //返回参数值
-	}
+<!-- Custom and plugin javascript -->
+<script src="${ctx}/js/inspinia.js"></script>
+<script src="${ctx}/js/plugins/pace/pace.min.js"></script>
 
-	function dataX(){
-		$.ajax(
-				{
-					url:"/getx?num="+getUrlParam("num"),
-					dataType:"text",
-					success:function(data)
-					{
-						var rows=eval(data);
-						//调用函数获取值，转换成数组模式
-						for(var i=0;i<rows.length;i++)
-						{
-							arrX.push(rows[i].time);
-						}
-						return arrX;
-					}
-				});
-	}
+<!-- Morris demo data-->
+<script src="${ctx}/js/demo/morris-demo.js"></script>
 
-	// Step:3 conifg ECharts's path, link to echarts.js from current page.
-	// Step:3 为模块加载器配置echarts的路径，从当前页面链接到echarts.js，定义所需图表路径
-	require.config({
-		paths: {
-			echarts: './js'
-		}
-	});
-
-	// Step:4 require echarts and use it in the callback.
-	// Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
-	require(
-			[
-				'echarts',
-				'echarts/chart/bar',
-				'echarts/chart/line',
-				'echarts/chart/map'
-			],
-			function (ec) {
-				//--- 折柱 ---
-				var myChart = ec.init(document.getElementById('main'));
-				myChart.setOption({
-					tooltip : {
-						trigger: 'axis'
-					},
-					legend: {
-						data:['邮件营销']
-					},
-					toolbox: {
-						show : true,
-						feature : {
-							mark : {show: true},
-							dataView : {show: true, readOnly: false},
-							magicType : {show: true, type: ['line']},
-							restore : {show: true},
-							saveAsImage : {show: true}
-						}
-					},
-					calculable : true,
-					xAxis : [
-						{
-							type : 'category',
-							boundaryGap : false,
-							data : (function(){
-								var arrX=[];
-								dataX();
-								alert(arrX);
-								return arrX;
-							})
-						}
-					],
-					yAxis : [
-						{
-							type : 'value'
-						}
-					],
-					series : [
-						{
-							name:'邮件营销',
-							type:'line',
-							stack: '总量',
-							data:[120, 132, 101]
-						}
-					]
-				});
-
-			}
-	);
-</script>
 </body>
+
 </html>

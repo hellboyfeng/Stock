@@ -20,7 +20,7 @@ $(function() {
         pointSize:5,
     });
 
-    Morris.Area({
+  /*  Morris.Area({
         element: 'morris-area-chart',
         data: [{ period: '2010 Q1', iphone: 2666, ipad: null, itouch: 2647 },
             { period: '2010 Q2', iphone: 2778, ipad: 2294, itouch: 2441 },
@@ -85,5 +85,5 @@ $(function() {
         resize: true,
         lineColors: ['#54cdb4','#1ab394'],
     });
-
+*/
 });
