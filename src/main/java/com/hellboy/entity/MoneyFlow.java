@@ -113,7 +113,7 @@ public class MoneyFlow {
     public void setMainout(double mainout) {
         this.mainout = mainout;
     }
-    @JsonIgnore
+
     public double getMainnetmount() {
         return mainnetmount;
     }
@@ -170,7 +170,6 @@ public class MoneyFlow {
         this.time = time;
     }
 
-    @JsonIgnore
     public String getNum() {
         return num;
     }

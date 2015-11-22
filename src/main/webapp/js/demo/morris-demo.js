@@ -1,24 +1,43 @@
 $(function() {
+dataX();
 
-    Morris.Line({
-        element: 'morris-one-line-chart',
-            data: [
-                { year: '2008', value: 5 },
-                { year: '2009', value: 10 },
-                { year: '2010', value: 8 },
-                { year: '2011', value: 22 },
-                { year: '2012', value: 8 },
-                { year: '2014', value: 10 },
-                { year: '2015', value: 5 }
-            ],
-        xkey: 'year',
-        ykeys: ['value'],
-        resize: true,
-        lineWidth:4,
-        labels: ['Value'],
-        lineColors: ['#1ab394'],
-        pointSize:5,
-    });
+    var arrX=[];
+    function dataX(){
+        $.ajax(
+            {
+                url:"/getchart?num="+getUrlParam("num"),
+                dataType:"text",
+                success:function(data)
+                {
+                    var rows=eval(data);
+                /*
+                    for(var i=0;i<rows.length;i++)
+                    {
+                        arrX.push({year:rows[i].time,value:rows[i].time});
+                    }
+*/
+                    var line = Morris.Line({
+                        element: 'morris-one-line-chart',
+                        data: rows,
+                        xkey: 'time',
+                        ykeys: ['mainnetmount'],
+                        resize: true,
+                        lineWidth:4,
+                        labels: ['净流入：:'],
+                        lineColors: ['#1ab394'],
+                        pointSize:5,
+                        parseTime:false
+                    });
+                }
+            });
+    }
+
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+
 
   /*  Morris.Area({
         element: 'morris-area-chart',

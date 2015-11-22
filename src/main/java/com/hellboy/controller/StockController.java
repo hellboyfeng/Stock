@@ -21,12 +21,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
@@ -40,11 +43,24 @@ import static java.util.Arrays.asList;
 @RequestMapping("/")
 public class StockController {
     private Logger logger = LoggerFactory.getLogger(StockController.class);
-
+    ObjectMapper mapper = new ObjectMapper();
+    public void init(){
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+        TypeFactory typeFactory = mapper.getTypeFactory();
+        CollectionType collectionType = typeFactory.constructCollectionType(List.class, MoneyFlow.class);
+    }
     @RequestMapping(value="")
     public String get(Model model) throws IOException, ClassNotFoundException ,InterruptedException{
-        List<MoneyFlow> moneyFlows = MongoUtil.getMoneyFlow();
-        model.addAttribute("moneyflows",moneyFlows);
+        List<MoneyFlow> moneyFlows = MongoUtil.getMoneyFlow().stream()
+                .filter(x->{
+                    return x.getMainnetmount()>60000;
+                })
+                .sorted((f1, f2) -> Double.compare(f2.getMainnetmount(), f1.getMainnetmount()))
+                //.sorted((f1, f2) -> Double.compare(f2.getChangeratio(), f1.getChangeratio()))
+                .collect(Collectors.toList());
+        model.addAttribute("moneyflows", moneyFlows);
+        String flows = mapper.writeValueAsString(moneyFlows);
+        model.addAttribute("flows",flows);
         return "index";
     }
 
@@ -53,14 +69,21 @@ public class StockController {
         return "chart";
     }
 
-    @RequestMapping(value="getx")
+    @RequestMapping(value="getchart")
     @ResponseBody
-    public String getX(Model model,String num,HttpServletRequest req) throws IOException {
-        List<MoneyFlow> moneyFlows = MongoUtil.getMoneyFlowHistory(num);
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-        TypeFactory typeFactory = mapper.getTypeFactory();
-        CollectionType collectionType = typeFactory.constructCollectionType(List.class, MoneyFlow.class);
+    public String getChart(Model model,String num,HttpServletRequest req) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+        List<MoneyFlow> moneyFlows = MongoUtil.getMoneyFlowHistory(num)
+                .stream()
+                .sorted((f1, f2) -> {
+                    try {
+                        return sdf.parse(f1.getTime()).compareTo(sdf.parse(f2.getTime()));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    return 0;
+                })
+                .collect(Collectors.toList());
         String value = mapper.writeValueAsString(moneyFlows);
         return value;
     }

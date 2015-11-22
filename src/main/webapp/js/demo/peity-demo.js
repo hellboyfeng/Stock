@@ -1,5 +1,5 @@
 $(function() {
-    $("http://webapplayers.com/inspinia_admin-v2.3/js/demo/span.pie").peity("pie", {
+    $(".pie").peity("pie", {
         fill: ['#1ab394', '#d7d7d7', '#ffffff']
     })
 
@@ -9,7 +9,9 @@ $(function() {
     })
 
     $(".bar").peity("bar", {
-        fill: ["#1ab394", "#d7d7d7"]
+        fill: ["#1ab394", "#d7d7d7"],
+        width:200,
+        height:50
     })
 
     $(".bar_dashboard").peity("bar", {
