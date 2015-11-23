@@ -36,34 +36,42 @@
 
 
 	<script>
+
+	var path = "${ctx}";
 	function openwin(url){
 		var win = window.open(url, 'newwindow', 'height=500, width=800, top=200, left=300, titlebar=no,toolbar=no, menubar=no, scrollbars=no,resizable=no,location=no,status=no');
 	}
 
+	//显示K线图
+	function showk(th){
+		var num = $(th).attr("id");
+		var value = 'symbol='+num+'&amp;code=iddg64geja6fea4eafh9jbj7c5j4ie5d&amp;s=3';
+		$("#kk").attr("value",value)
+	}
+
+	//显示图表
 	function makeChart(num,data){
 		$("#"+num).sparkline(data, {
-			type: 'bar',
-			barWidth: 8,
-			height: '100px',
-			barColor: '#1ab394',
-			negBarColor: '#c6c6c6'});
+			type: 'line',
+			height:'50px',
+			lineColor: '#17997f',
+			fillColor: '#ffffff'});
 	}
 
 	$(function(){
 
-		var dataM = 	'${flows}';
-		var jsonData = JSON.parse(dataM);
+		var jsonData = JSON.parse('${flows}');
 		$.each(jsonData,function(i,index){
 			$.ajax(
 				{
-					url:"/getchart?num="+index.num,
+					url:path+"/getchart?num="+index.num,
 					dataType:"text",
 					success:function(data)
 					{
 						var jData = JSON.parse(data);
 						var bar=[];
 						$.each(jData,function(t,tt){
-							bar.push(tt.mainnetmount/10000);
+							bar.push(tt.mainnetmount);
 						})
 						makeChart(index.num,bar)
 					}
@@ -97,7 +105,7 @@
 		</div>
 		<div class="ibox-content">
 
-			<table class=" table-striped table-bordered table-hover " id="editable"  width="60%">
+			<table  class="table table-striped"  width="60%">
 			<thead>
 				<tr>
 					<th>名称</th>
@@ -106,6 +114,7 @@
 					<th>价格(元)</th>
 					<th>主力净流入(万)</th>
 					<th>图表</th>
+					<th>K线图</th>
 					<th></th>
 				</tr>
 				</thead>
@@ -115,17 +124,33 @@
 					<td>${flow.name}</td>
 					<td>${flow.num}</td>
 					<td>${flow.changeratio}</td>
-					<td class="gradeA">${flow.trade}</td>
-					<td>${flow.mainnetmount}</td>
-					<td><span id="${flow.num}" class="spk"></span>
-					</td>
-					<td><button class="btn btn-info  dim" type="button" onclick="javascript:openwin('${ctx}/chart?num=${flow.num}')"></td>
+					<td>${flow.trade}</td>
+					<td>${flow.mainnetmount} </td>
+				    <td><span id="${flow.num}"></span></td>
+					<td><a href="#modal" class="btn btn-sm btn-primary" id="${flow.num}" data-toggle="modal" onclick="showk(this)" > <i class="fa fa-pencil fa-fw"></i>查看K线图</a></td>
+					<td><button class="btn btn-info  dim" value="查看图表" type="button" onclick="javascript:openwin('${ctx}/chart?num=${flow.num}')"></td>
 				</tr>
 				</c:forEach>
 				</tbody>
 			</table>
 
 
+		</div>
+	</div>
+</div>
+<!-- #modal-alert -->
+<div class="modal fade" id="modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			</div>
+			<div class="modal-body">
+				<object type="application/x-shockwave-flash"  data="http://finance.sina.com.cn/flash/cn.swf?" width="560" height="490" id="flash" style="visibility: visible;"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always"><param name="wmode" value="transparent"><param name="flashvars" id="kk" value=""></object>
+			</div>
+			<div class="modal-footer">
+				<a href="javascript:;" class="btn btn-sm btn-white" data-dismiss="modal">关闭</a>
+			</div>
 		</div>
 	</div>
 </div>

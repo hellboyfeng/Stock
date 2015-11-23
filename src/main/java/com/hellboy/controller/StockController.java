@@ -53,7 +53,8 @@ public class StockController {
     public String get(Model model) throws IOException, ClassNotFoundException ,InterruptedException{
         List<MoneyFlow> moneyFlows = MongoUtil.getMoneyFlow().stream()
                 .filter(x->{
-                    return x.getMainnetmount()>60000;
+                    return true;
+                    //return x.getMainnetmount()>60000;
                 })
                 .sorted((f1, f2) -> Double.compare(f2.getMainnetmount(), f1.getMainnetmount()))
                 //.sorted((f1, f2) -> Double.compare(f2.getChangeratio(), f1.getChangeratio()))

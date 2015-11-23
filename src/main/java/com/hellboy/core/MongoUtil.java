@@ -30,7 +30,8 @@ import java.util.stream.Collectors;
  */
 public class MongoUtil<T> {
 
-    private static final  String ip="192.168.31.168";
+    //private static final  String ip="192.168.31.168";
+    private static final  String ip="192.168.4.134";
     public static void main(String[] args) throws IOException {
 
     }

@@ -50,7 +50,7 @@ public class MoneyFlowSpider {
             cm.setMaxPerRoute(new HttpRoute(proxy), 80);
             DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
             client = HttpClients.custom()
-                    //.setRoutePlanner(routePlanner)
+                    .setRoutePlanner(routePlanner)
                     .setConnectionManager(cm)
                     .build();
 

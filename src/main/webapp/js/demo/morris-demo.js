@@ -1,11 +1,10 @@
 $(function() {
-dataX();
-
+    dataX();
     var arrX=[];
     function dataX(){
         $.ajax(
             {
-                url:"/getchart?num="+getUrlParam("num"),
+                url:path+"/getchart?num="+getUrlParam("num"),
                 dataType:"text",
                 success:function(data)
                 {
@@ -23,7 +22,7 @@ dataX();
                         ykeys: ['mainnetmount'],
                         resize: true,
                         lineWidth:4,
-                        labels: ['净流入：:'],
+                        labels: ['净流入：'],
                         lineColors: ['#1ab394'],
                         pointSize:5,
                         parseTime:false

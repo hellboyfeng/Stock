@@ -4,12 +4,15 @@ import com.hellboy.entity.Money;
 import com.hellboy.entity.MoneyFlow;
 import com.hellboy.entity.Stock;
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -18,8 +21,10 @@ import static java.util.Arrays.asList;
  * Created by hellboy on 2015/10/5.
  */
 public class StockMain {
-    public static void main(String[] args) throws InterruptedException, IOException {
-        StockBase.resultStocks.clear();
+    public static void main(String[] args) throws InterruptedException, IOException, SchedulerException {
+
+        schedule();
+     /*   StockBase.resultStocks.clear();
         StockBase.moneyFlows.clear();
         long startTime=System.currentTimeMillis();   //获取开始时间
         //save();
@@ -29,8 +34,55 @@ public class StockMain {
         StockBase.executor.shutdown();
         long endTime=System.currentTimeMillis(); //获取结束时间
         System.out.println("程序运行时间： " + (endTime - startTime) / 1000 + "ms");
-        System.exit(1);
+        System.exit(1);*/
     }
+
+    public static void schedule() throws SchedulerException {
+        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
+        service.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                StockBase.resultStocks.clear();
+                StockBase.moneyFlows.clear();
+                long startTime=System.currentTimeMillis();   //获取开始时间
+                //save();
+                //read();
+                //main();
+                try {
+                    moneyFlow();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                StockBase.executor.shutdown();
+                long endTime=System.currentTimeMillis(); //获取结束时间
+                System.out.println("程序运行时间： " + (endTime - startTime) / 1000 + "ms");
+            }
+        }, 1, 180, TimeUnit.SECONDS);
+
+    }
+
+
+
+    //实时出数据
+    public static void moneyFlow() throws InterruptedException {
+        List<Future<MoneyFlow>> results = StockBase.executor.invokeAll(asList(
+                new MoneyFlowRun(0, 600), new MoneyFlowRun(600, 1200), new MoneyFlowRun(1200, 2296)
+        ));
+        String date = DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+        String path = "e:\\stock\\moneyflow.xls";
+        List<MoneyFlow> moneyFlows = StockBase.moneyFlows
+                .stream()
+                .filter(x->{
+                    return x.getMainnetmount()>10000;
+                })
+                .sorted((p1,p2)->Double.compare(p2.getChangeratio(),p1.getChangeratio()))
+                .collect(Collectors.toList());
+
+        PoiExcel.exportMoneyFlowExcel(moneyFlows, "资金流向", path, date);
+        MongoUtil.saveMoneyFlow(moneyFlows, "moneyflow");
+        MongoUtil.saveMoneyFlowHistory(StockBase.moneyFlows, "moneyflowhistory");
+    }
+
 
     //实时出数据
     public static void main() throws InterruptedException {
@@ -67,25 +119,6 @@ public class StockMain {
     }
 
 
-    //实时出数据
-    public static void moneyFlow() throws InterruptedException {
-        List<Future<MoneyFlow>> results = StockBase.executor.invokeAll(asList(
-                new MoneyFlowRun(0, 600), new MoneyFlowRun(600, 1200), new MoneyFlowRun(1200, 2296)
-        ));
-        String date = DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss");
-        String path = "e:\\stock\\moneyflow.xls";
-        List<MoneyFlow> moneyFlows = StockBase.moneyFlows
-                .stream()
-                .filter(x->{
-                    return x.getMainnetmount()>10000;
-                })
-                .sorted((p1,p2)->Double.compare(p2.getChangeratio(),p1.getChangeratio()))
-                .collect(Collectors.toList());
-
-        PoiExcel.exportMoneyFlowExcel(moneyFlows, "资金流向", path, date);
-        MongoUtil.saveMoneyFlow(moneyFlows,"moneyflow");
-        MongoUtil.saveMoneyFlowHistory(moneyFlows,"moneyflowhistory");
-    }
 
 
 
