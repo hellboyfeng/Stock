@@ -53,11 +53,11 @@ public class StockMain {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                StockBase.executor.shutdown();
+                //StockBase.executor.shutdown();
                 long endTime=System.currentTimeMillis(); //获取结束时间
                 System.out.println("程序运行时间： " + (endTime - startTime) / 1000 + "ms");
             }
-        }, 1, 180, TimeUnit.SECONDS);
+        }, 1, 300, TimeUnit.SECONDS);
 
     }
 
@@ -72,13 +72,13 @@ public class StockMain {
         String path = "e:\\stock\\moneyflow.xls";
         List<MoneyFlow> moneyFlows = StockBase.moneyFlows
                 .stream()
-                .filter(x->{
-                    return x.getMainnetmount()>10000;
-                })
+            /*    .filter(x->{
+                    return x.getMainnetmount()>3000;
+                })*/
                 .sorted((p1,p2)->Double.compare(p2.getChangeratio(),p1.getChangeratio()))
                 .collect(Collectors.toList());
 
-        PoiExcel.exportMoneyFlowExcel(moneyFlows, "资金流向", path, date);
+        //PoiExcel.exportMoneyFlowExcel(moneyFlows, "资金流向", path, date);
         MongoUtil.saveMoneyFlow(moneyFlows, "moneyflow");
         MongoUtil.saveMoneyFlowHistory(StockBase.moneyFlows, "moneyflowhistory");
     }

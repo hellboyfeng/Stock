@@ -24,15 +24,17 @@ public class StockBase {
     static{
         init();
     }
+
     public static void init(){
             executor = Executors.newFixedThreadPool(3);
             reSerialize();
-           //getAllStock();
+            //serialize();
     }
     public static void serialize(){
         try {
+            getAllStock();
             ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(serializeData));
-            output.writeObject(StockBase.astocks);
+            output.writeObject(StockBase.stocks);
             output.close();
         } catch (IOException e) {
             e.printStackTrace();

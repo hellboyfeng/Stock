@@ -1,9 +1,12 @@
 package com.hellboy.controller;
 
+import com.google.common.collect.Lists;
 import com.hellboy.core.*;
+import com.hellboy.entity.AutoComplte;
 import com.hellboy.entity.Money;
 import com.hellboy.entity.MoneyFlow;
 import com.hellboy.entity.Stock;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.http.HttpRequest;
 import org.codehaus.jackson.JsonParser;
@@ -23,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -53,8 +57,7 @@ public class StockController {
     public String get(Model model) throws IOException, ClassNotFoundException ,InterruptedException{
         List<MoneyFlow> moneyFlows = MongoUtil.getMoneyFlow().stream()
                 .filter(x->{
-                    return true;
-                    //return x.getMainnetmount()>60000;
+                    return x.getMainnetmount()>10000;
                 })
                 .sorted((f1, f2) -> Double.compare(f2.getMainnetmount(), f1.getMainnetmount()))
                 //.sorted((f1, f2) -> Double.compare(f2.getChangeratio(), f1.getChangeratio()))
@@ -70,7 +73,7 @@ public class StockController {
         return "chart";
     }
 
-    @RequestMapping(value="getchart")
+    @RequestMapping(value="getchart", produces = "text/plain;charset=UTF-8")
     @ResponseBody
     public String getChart(Model model,String num,HttpServletRequest req) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
@@ -88,6 +91,29 @@ public class StockController {
         String value = mapper.writeValueAsString(moneyFlows);
         return value;
     }
+
+    @RequestMapping(value="getstock", produces = "text/plain;charset=UTF-8")
+    @ResponseBody
+    public String getStock(Model model,String num,HttpServletRequest req) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+        List<Stock> stocks = StockBase.stocks
+                .stream()
+                .filter(x->{
+                    return x.getNum().indexOf(num)>-1;
+                })
+                .collect(Collectors.toList());
+        List<AutoComplte> autoCompltes = Lists.newArrayList();
+        for (Stock stock : stocks) {
+            AutoComplte autoComplte = new AutoComplte();
+            autoComplte.setName(stock.getName());
+            autoComplte.setValue(stock.getNum());
+            autoComplte.setTokens(Arrays.asList(ArrayUtils.toString(stock.getNum().toCharArray())));
+            autoCompltes.add(autoComplte);
+        }
+        String value = mapper.writeValueAsString(autoCompltes);
+        return value;
+    }
+
 
 
 }

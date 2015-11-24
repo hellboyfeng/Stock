@@ -14,7 +14,7 @@
 	<link href="${ctx}/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
 	<link href="${ctx}/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
 	<link href="${ctx}/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
-
+	<link href="${ctx}/js/plugins/typeahead/typeahead.css" rel="stylesheet" />
 
 
 	<!-- Mainly scripts -->
@@ -33,6 +33,10 @@
 
 	<!-- Sparkline -->
 	<script src="${ctx}/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+	<script src="${ctx}/js/plugins/typeahead/handlebars.js"></script>
+	<script src="${ctx}/js/plugins/typeahead/bloodhound.min.js"></script>
+	<script src="${ctx}/js/plugins/typeahead/typeahead.bundle.min.js"></script>
+	<script src="${ctx}/js/plugins/typeahead/typeahead.jquery.min.js"></script>
 
 
 	<script>
@@ -77,35 +81,62 @@
 					}
 				});
 		})
+
+
+
+		var bestPictures = new Bloodhound({
+			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+			queryTokenizer: Bloodhound.tokenizers.whitespace,
+			remote: {
+				url: path+'/getstock?num=%QUERY',
+				wildcard: '%QUERY'
+			}
+		});
+
+		$('#num').typeahead(null, {
+			name: 'best-pictures',
+			display: 'name',
+			limit: 66,
+			highlight: true,
+			source: bestPictures
+		});
+
 	})
 	</script>
+
+	<style>
+		table.issue-tracker tbody tr td {
+			vertical-align: middle;
+			height: 50px;
+		}
+		.table {
+			width: 100%;
+			max-width: 100%;
+			font-size: 85%;
+			margin-bottom: 20px
+		}
+
+	</style>
 
 </head>
 <body>
 <div class="col-lg-12">
 	<div class="ibox float-e-margins">
 		<div class="ibox-title">
-			<div class="ibox-tools">
-				<a class="collapse-link">
-					<i class="fa fa-chevron-up"></i>
-				</a>
-				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-					<i class="fa fa-wrench"></i>
-				</a>
-				<ul class="dropdown-menu dropdown-user">
-					<li><a href="#">Config option 1</a>
-					</li>
-					<li><a href="#">Config option 2</a>
-					</li>
-				</ul>
-				<a class="close-link">
-					<i class="fa fa-times"></i>
-				</a>
-			</div>
 		</div>
 		<div class="ibox-content">
 
-			<table  class="table table-striped"  width="60%">
+			<div class="m-b-lg">
+
+				<div class="input-group">
+					<input type="text" placeholder="Search issue by name..." class=" form-control" id="num" style="width:600px;">
+				</div>
+			</div>
+
+
+		<div class="ibox-content">
+
+			<table  class="table table-hover issue-tracker"  width="60%">
 			<thead>
 				<tr>
 					<th>名称</th>

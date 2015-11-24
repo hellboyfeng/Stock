@@ -47,6 +47,7 @@ public class Stock implements Serializable {
     public void setIndustry(String industry) {
         this.industry = industry;
     }
+    @JsonIgnore
     public List<Money> getMoneylist() {
         return moneylist;
     }
