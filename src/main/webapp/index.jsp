@@ -93,7 +93,7 @@
 			}
 		});
 
-		$('#num').typeahead(null, {
+		$('#sname').typeahead(null, {
 			name: 'best-pictures',
 			display: 'name',
 			limit: 66,
@@ -129,7 +129,9 @@
 			<div class="m-b-lg">
 
 				<div class="input-group">
-					<input type="text" placeholder="Search issue by name..." class=" form-control" id="num" style="width:600px;">
+					<form action="${ctx}" method="get">
+					<input type="text" placeholder="Search issue by name..." class=" form-control" id="sname" name="sname" style="width:600px;"> <input type="submit" value="Submit" />
+					</form>
 				</div>
 			</div>
 

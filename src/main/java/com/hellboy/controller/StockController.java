@@ -1,5 +1,6 @@
 package com.hellboy.controller;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.hellboy.core.*;
 import com.hellboy.entity.AutoComplte;
@@ -53,15 +54,18 @@ public class StockController {
         TypeFactory typeFactory = mapper.getTypeFactory();
         CollectionType collectionType = typeFactory.constructCollectionType(List.class, MoneyFlow.class);
     }
-    @RequestMapping(value="")
-    public String get(Model model) throws IOException, ClassNotFoundException ,InterruptedException{
+    @RequestMapping(value="",produces = "text/plain;charset=UTF-8")
+    public String get(Model model,HttpServletRequest req) throws IOException, ClassNotFoundException ,InterruptedException{
+        String name = req.getParameter("sname");
+
         List<MoneyFlow> moneyFlows = MongoUtil.getMoneyFlow().stream()
                 .filter(x->{
-                    return x.getMainnetmount()>10000;
+                    return x.getMainnetmount()>50000;
                 })
                 .sorted((f1, f2) -> Double.compare(f2.getMainnetmount(), f1.getMainnetmount()))
                 //.sorted((f1, f2) -> Double.compare(f2.getChangeratio(), f1.getChangeratio()))
                 .collect(Collectors.toList());
+
         model.addAttribute("moneyflows", moneyFlows);
         String flows = mapper.writeValueAsString(moneyFlows);
         model.addAttribute("flows",flows);
