@@ -61,7 +61,7 @@ public class StockController {
         if(Strings.isNullOrEmpty(name)){
             moneyFlows = MongoUtil.getMoneyFlow().stream()
                     .filter(x->{
-                        return x.getMainnetmount()>50000;
+                        return x.getMainnetmount()>10000;
                     })
                     .sorted((f1, f2) -> Double.compare(f2.getMainnetmount(), f1.getMainnetmount()))
                             //.sorted((f1, f2) -> Double.compare(f2.getChangeratio(), f1.getChangeratio()))
