@@ -32,13 +32,15 @@ public class MongoUtil<T> {
 
     //private static final  String ip="192.168.31.168";
     private static final  String ip="192.168.4.134";
-    public static void main(String[] args) throws IOException {
+    private static MongoDatabase database;
+    static{
+        MongoClient mongoClient = new MongoClient(ip , 27017 );
+        database = mongoClient.getDatabase("stock");
 
     }
 
     public static void saveMoneyFlow(List<MoneyFlow> data,String name){
-        MongoClient mongoClient = new MongoClient(ip , 27017 );
-        MongoDatabase database = mongoClient.getDatabase("stock");
+
         MongoCollection<Document> collection = database.getCollection(name);
         collection.drop();
         ObjectMapper mapper = new ObjectMapper();
@@ -61,8 +63,6 @@ public class MongoUtil<T> {
     }
 
     public static void saveMoneyFlowHistory(List<MoneyFlow> data,String name){
-        MongoClient mongoClient = new MongoClient(ip , 27017 );
-        MongoDatabase database = mongoClient.getDatabase("stock");
         MongoCollection<Document> collection = database.getCollection(name);
         //collection.drop();
         ObjectMapper mapper = new ObjectMapper();
@@ -85,10 +85,7 @@ public class MongoUtil<T> {
     }
 
     public static List<Stock> getStock() throws IOException {
-            MongoClient mongoClient = new MongoClient( ip , 27017 );
-            MongoDatabase database = mongoClient.getDatabase("stock");
             MongoCollection<Document> collection = database.getCollection("stock");
-
             List<Stock> stocks = Lists.newArrayList();
             for (Document cur : collection.find()) {
                 Stock stock = new Stock();
@@ -102,16 +99,31 @@ public class MongoUtil<T> {
     }
 
 
+    public static List<MoneyFlow> getMoneyFlowByName(String name) throws IOException {
+        MongoCollection<Document> collection = database.getCollection("moneyflow");
+        List<MoneyFlow> moneyFlows = Lists.newArrayList();
+        FindIterable<Document> iterable =
+                collection.find(new Document("name", name));
+        iterable.forEach(new Block<Document>() {
+            @Override
+            public void apply(final Document document) {
+                MoneyFlow moneyFlow = new MoneyFlow();
+                moneyFlow.setNum(document.getString("num"));
+                moneyFlow.setName(document.getString("name"));
+                moneyFlow.setChangeratio(document.getDouble("changeratio"));
+                moneyFlow.setTrade(document.getDouble("trade"));
+                moneyFlow.setMainnetmount(document.getDouble("mainnetmount"));
+                moneyFlow.setTime(document.getString("time"));
+                moneyFlow.setDate(document.getString("date"));
+                moneyFlows.add(moneyFlow);
+            }
+        });
+        return moneyFlows;
+    }
+
 
     public static List<MoneyFlow> getMoneyFlow() throws IOException {
-        MongoClient mongoClient = new MongoClient(ip , 27017 );
-        MongoDatabase database = mongoClient.getDatabase("stock");
         MongoCollection<Document> collection = database.getCollection("moneyflow");
-
-   /*     ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-        TypeFactory typeFactory = mapper.getTypeFactory();
-        CollectionType collectionType = typeFactory.constructCollectionType(List.class, Money.class);*/
         List<MoneyFlow> moneyFlows = Lists.newArrayList();
         FindIterable<Document> iterable =
                 collection.find();
@@ -130,8 +142,6 @@ public class MongoUtil<T> {
         return moneyFlows;
     }
     public static List<MoneyFlow> getMoneyFlowHistory(String num) throws IOException {
-        MongoClient mongoClient = new MongoClient(ip , 27017 );
-        MongoDatabase database = mongoClient.getDatabase("stock");
         MongoCollection<Document> collection = database.getCollection("moneyflowhistory");
 
    /*     ObjectMapper mapper = new ObjectMapper();

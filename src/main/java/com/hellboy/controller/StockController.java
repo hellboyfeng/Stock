@@ -57,15 +57,18 @@ public class StockController {
     @RequestMapping(value="",produces = "text/plain;charset=UTF-8")
     public String get(Model model,HttpServletRequest req) throws IOException, ClassNotFoundException ,InterruptedException{
         String name = req.getParameter("sname");
-
-        List<MoneyFlow> moneyFlows = MongoUtil.getMoneyFlow().stream()
-                .filter(x->{
-                    return x.getMainnetmount()>50000;
-                })
-                .sorted((f1, f2) -> Double.compare(f2.getMainnetmount(), f1.getMainnetmount()))
-                //.sorted((f1, f2) -> Double.compare(f2.getChangeratio(), f1.getChangeratio()))
-                .collect(Collectors.toList());
-
+        List<MoneyFlow> moneyFlows = Lists.newArrayList();
+        if(Strings.isNullOrEmpty(name)){
+            moneyFlows = MongoUtil.getMoneyFlow().stream()
+                    .filter(x->{
+                        return x.getMainnetmount()>50000;
+                    })
+                    .sorted((f1, f2) -> Double.compare(f2.getMainnetmount(), f1.getMainnetmount()))
+                            //.sorted((f1, f2) -> Double.compare(f2.getChangeratio(), f1.getChangeratio()))
+                    .collect(Collectors.toList());
+        }else{
+            moneyFlows = MongoUtil.getMoneyFlowByName(name);
+        }
         model.addAttribute("moneyflows", moneyFlows);
         String flows = mapper.writeValueAsString(moneyFlows);
         model.addAttribute("flows",flows);

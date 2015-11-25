@@ -101,6 +101,13 @@
 			source: bestPictures
 		});
 
+
+		$(document).keyup(function(event){
+			if(event.keyCode ==13){
+				$("#search").trigger("click");
+			}
+		});
+
 	})
 	</script>
 
@@ -129,8 +136,8 @@
 			<div class="m-b-lg">
 
 				<div class="input-group">
-					<form action="${ctx}" method="get">
-					<input type="text" placeholder="Search issue by name..." class=" form-control" id="sname" name="sname" style="width:600px;"> <input type="submit" value="Submit" />
+					<form action="${ctx}" method="get" id="search">
+					<input type="text" placeholder="input stock code" class=" form-control" id="sname" name="sname" style="width:600px;"> <input type="submit" value="Submit" />
 					</form>
 				</div>
 			</div>
