@@ -83,7 +83,7 @@ public class StockController {
     @RequestMapping(value="getchart", produces = "text/plain;charset=UTF-8")
     @ResponseBody
     public String getChart(Model model,String num,HttpServletRequest req) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         List<MoneyFlow> moneyFlows = MongoUtil.getMoneyFlowHistory(num)
                 .stream()
                 .sorted((f1, f2) -> {
@@ -102,7 +102,7 @@ public class StockController {
     @RequestMapping(value="getstock", produces = "text/plain;charset=UTF-8")
     @ResponseBody
     public String getStock(Model model,String num,HttpServletRequest req) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         List<Stock> stocks = StockBase.stocks
                 .stream()
                 .filter(x->{

@@ -45,9 +45,6 @@ public class StockMain {
                 StockBase.resultStocks.clear();
                 StockBase.moneyFlows.clear();
                 long startTime=System.currentTimeMillis();   //获取开始时间
-                //save();
-                //read();
-                //main();
                 try {
                     moneyFlow();
                 } catch (InterruptedException e) {
